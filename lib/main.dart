@@ -1,8 +1,10 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
+import 'dart:async';
 
 const String INBOX_FILE_PATH = "/sdcard/phone_inbox.md";
 
@@ -37,6 +39,26 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  late FocusNode focusNode;
+  static const int FOCUS_KEYBOARD_DELAY_HACK = 100;
+
+  @override
+  void initState() {
+    super.initState();
+    focusNode = FocusNode();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Timer(const Duration(milliseconds: FOCUS_KEYBOARD_DELAY_HACK), () {
+        focusNode.requestFocus();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
+  }
+
   void _addToInbox(String text) {
     File file = File(INBOX_FILE_PATH);
     file.writeAsStringSync('* $text\n', mode: FileMode.append);
@@ -53,6 +75,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: TextField(
         onSubmitted: _addToInbox,
+        focusNode: focusNode,
+        autofocus: false,
       ),
     );
   }
