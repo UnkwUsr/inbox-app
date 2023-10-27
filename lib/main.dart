@@ -1,4 +1,10 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'dart:io';
+
+const String INBOX_FILE_PATH = "/sdcard/phone_inbox.md";
 
 void main() {
   runApp(const MyApp());
@@ -31,6 +37,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  void _addToInbox(String text) {
+    File file = File(INBOX_FILE_PATH);
+    file.writeAsStringSync('* $text\n', mode: FileMode.append);
+
+    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +51,8 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
+      body: TextField(
+        onSubmitted: _addToInbox,
       ),
     );
   }
