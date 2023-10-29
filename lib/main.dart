@@ -77,6 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
     File file = File(INBOX_FILE_PATH);
     file.writeAsStringSync('* $text\n', mode: FileMode.append);
 
+    // close app
     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
   }
 
@@ -131,6 +132,9 @@ class _MyHomePageState extends State<MyHomePage> {
         isRecording = false;
         stopWatchTimer.onStopTimer();
         stopWatchTimer.onResetTimer();
+
+        // close app
+        SystemChannels.platform.invokeMethod('SystemNavigator.pop');
       });
 
       return;
