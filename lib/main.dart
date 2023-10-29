@@ -147,6 +147,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     stopWatchTimer.onStartTimer();
+    // hide keyboard
+    focusNode.unfocus();
 
     setState(() {
       isRecording = true;
