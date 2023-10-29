@@ -5,8 +5,10 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'dart:async';
+import 'package:record/record.dart';
 
 const String INBOX_FILE_PATH = "/sdcard/phone_inbox.md";
+const String VOICE_RECORD_PATH = "/sdcard/inbox_voices";
 
 void main() {
   runApp(const MyApp());
@@ -42,20 +44,29 @@ class _MyHomePageState extends State<MyHomePage> {
   late FocusNode focusNode;
   static const int FOCUS_KEYBOARD_DELAY_HACK = 100;
 
+  late final AudioRecorder audioRecorder;
+  bool isRecording = false;
+
   @override
   void initState() {
     super.initState();
+
     focusNode = FocusNode();
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Timer(const Duration(milliseconds: FOCUS_KEYBOARD_DELAY_HACK), () {
         focusNode.requestFocus();
       });
     });
+
+    audioRecorder = AudioRecorder();
   }
 
   @override
   void dispose() {
+    audioRecorder.stop();
+
     focusNode.dispose();
+    audioRecorder.dispose;
     super.dispose();
   }
 
@@ -73,11 +84,50 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: TextField(
-        onSubmitted: _addToInbox,
-        focusNode: focusNode,
-        autofocus: false,
-      ),
+      body: Column(children: [
+        TextField(
+          onSubmitted: _addToInbox,
+          focusNode: focusNode,
+          autofocus: false,
+        ),
+        const Text("or", style: TextStyle(fontSize: 18)),
+        // const SizedBox(height: 10),
+        Transform.scale(
+            scale: 1.25,
+            child: ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStatePropertyAll<Color>(
+                        isRecording ? Colors.red : Colors.white)),
+                onPressed: () => toggleRecording(),
+                child: isRecording
+                    ? const Text("Stop recording")
+                    : const Text("Start recording"))),
+      ]),
     );
+  }
+
+  toggleRecording() async {
+    if (!await audioRecorder.hasPermission()) {
+      return;
+    }
+
+    if (isRecording) {
+      audioRecorder.stop();
+      setState(() {
+        isRecording = false;
+      });
+
+      return;
+    }
+
+    Directory(VOICE_RECORD_PATH).create(recursive: true).then((_) {
+      var timestamp = DateTime.now().millisecondsSinceEpoch;
+      var path = "$VOICE_RECORD_PATH/voice_$timestamp.m4a";
+      audioRecorder.start(const RecordConfig(), path: path);
+    });
+
+    setState(() {
+      isRecording = true;
+    });
   }
 }
