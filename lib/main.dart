@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'dart:io';
 import 'dart:async';
 import 'package:record/record.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 const String INBOX_FILE_PATH = "/sdcard/phone_inbox.md";
 const String VOICE_RECORD_PATH = "/sdcard/inbox_voices";
@@ -46,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   late final AudioRecorder audioRecorder;
   bool isRecording = false;
+  final StopWatchTimer stopWatchTimer = StopWatchTimer();
 
   @override
   void initState() {
@@ -67,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     focusNode.dispose();
     audioRecorder.dispose;
+    stopWatchTimer.dispose();
     super.dispose();
   }
 
@@ -102,6 +105,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: isRecording
                     ? const Text("Stop recording")
                     : const Text("Start recording"))),
+        if (isRecording)
+          StreamBuilder<int>(
+            stream: stopWatchTimer.rawTime,
+            initialData: stopWatchTimer.rawTime.value,
+            builder: (context, snap) {
+              final value = snap.data!;
+              final displayTime =
+                  StopWatchTimer.getDisplayTime(value, hours: false);
+              return Text(displayTime);
+            },
+          ),
       ]),
     );
   }
@@ -115,6 +129,8 @@ class _MyHomePageState extends State<MyHomePage> {
       audioRecorder.stop();
       setState(() {
         isRecording = false;
+        stopWatchTimer.onStopTimer();
+        stopWatchTimer.onResetTimer();
       });
 
       return;
@@ -125,6 +141,8 @@ class _MyHomePageState extends State<MyHomePage> {
       var path = "$VOICE_RECORD_PATH/voice_$timestamp.m4a";
       audioRecorder.start(const RecordConfig(), path: path);
     });
+
+    stopWatchTimer.onStartTimer();
 
     setState(() {
       isRecording = true;
