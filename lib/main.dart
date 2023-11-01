@@ -8,8 +8,9 @@ import 'dart:async';
 import 'package:record/record.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-const String INBOX_FILE_PATH = "/sdcard/phone_inbox.md";
-const String VOICE_RECORD_PATH = "/sdcard/inbox_voices";
+const String INBOX_PATH = "/sdcard/txts/phone_inbox";
+const String INBOX_MD_PATH = "$INBOX_PATH/inbox.md";
+const String INBOX_VOICES_PATH = "$INBOX_PATH/voices";
 
 void main() {
   runApp(const MyApp());
@@ -74,7 +75,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _addToInbox(String text) {
-    File file = File(INBOX_FILE_PATH);
+    File file = File(INBOX_MD_PATH);
+    file.parent.create(recursive: true);
     file.writeAsStringSync('* $text\n', mode: FileMode.append);
 
     // close app
@@ -140,9 +142,9 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
 
-    Directory(VOICE_RECORD_PATH).create(recursive: true).then((_) {
+    Directory(INBOX_VOICES_PATH).create(recursive: true).then((_) {
       var timestamp = DateTime.now().millisecondsSinceEpoch;
-      var path = "$VOICE_RECORD_PATH/voice_$timestamp.m4a";
+      var path = "$INBOX_VOICES_PATH/voice_$timestamp.m4a";
       audioRecorder.start(const RecordConfig(), path: path);
     });
 
