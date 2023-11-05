@@ -145,7 +145,18 @@ class _MyHomePageState extends State<MyHomePage> {
     Directory(INBOX_VOICES_PATH).create(recursive: true).then((_) {
       var timestamp = DateTime.now().millisecondsSinceEpoch;
       var path = "$INBOX_VOICES_PATH/voice_$timestamp.m4a";
-      audioRecorder.start(const RecordConfig(), path: path);
+      File file = File(path);
+      var config = const RecordConfig();
+
+      (() async {
+        final stream = await audioRecorder.startStream(config);
+        stream.listen(
+          (data) {
+            file.writeAsBytesSync(data, mode: FileMode.append);
+          },
+          // onDone: () => print('End of stream'),
+        );
+      })();
     });
 
     stopWatchTimer.onStartTimer();
