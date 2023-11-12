@@ -1,4 +1,4 @@
-package com.example.asd
+package unkwusr.inbox_app
 
 import android.service.quicksettings.TileService
 import android.service.quicksettings.Tile

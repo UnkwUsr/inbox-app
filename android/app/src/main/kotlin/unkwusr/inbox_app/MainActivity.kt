@@ -1,4 +1,4 @@
-package com.example.asd
+package unkwusr.inbox_app
 
 import io.flutter.embedding.android.FlutterActivity
 
