@@ -148,8 +148,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     Directory(INBOX_VOICES_PATH).create(recursive: true).then((_) {
-      var timestamp = DateTime.now().millisecondsSinceEpoch;
-      var path = "$INBOX_VOICES_PATH/voice_$timestamp.m4a";
+      var datetime = formatDateTime(DateTime.now());
+      var path = "$INBOX_VOICES_PATH/voice_$datetime.m4a";
       File file = File(path);
       var config = const RecordConfig();
 
@@ -172,4 +172,14 @@ class _MyHomePageState extends State<MyHomePage> {
       isRecording = true;
     });
   }
+}
+
+// YYYY-MM-DD_hh-mm
+String formatDateTime(DateTime datetime) {
+  return datetime
+      .toString()
+      .split(":")
+      .take(2)
+      .join("-")
+      .replaceFirst(" ", "_");
 }
