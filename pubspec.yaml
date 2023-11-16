@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  permission_handler: ^11.0.1
   record: ^5.0.1
   stop_watch_timer: ^3.0.2
 

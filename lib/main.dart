@@ -1,12 +1,13 @@
 // ignore_for_file: constant_identifier_names
 
+import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'dart:io';
-import 'dart:async';
 import 'package:record/record.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 const String INBOX_PATH = "/sdcard/txts/phone_inbox";
 const String INBOX_MD_PATH = "$INBOX_PATH/inbox.md";
@@ -74,7 +75,11 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  void _addToInbox(String text) {
+  void _addToInbox(String text) async {
+    if (await Permission.storage.request().isDenied) {
+      return;
+    }
+
     File file = File(INBOX_MD_PATH);
     file.parent.create(recursive: true);
     file.writeAsStringSync('* $text\n', mode: FileMode.append);
