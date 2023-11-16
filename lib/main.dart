@@ -81,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     File file = File(INBOX_MD_PATH);
-    file.parent.create(recursive: true);
+    await file.parent.create(recursive: true);
     file.writeAsStringSync('* $text\n', mode: FileMode.append);
 
     // close app
