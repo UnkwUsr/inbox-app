@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:record/record.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -47,10 +48,13 @@ class _MyHomePageState extends State<MyHomePage> {
   late FocusNode focusNode;
   static const int FOCUS_KEYBOARD_DELAY_HACK = 100;
 
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   late final AudioRecorder audioRecorder;
   bool isRecording = false;
   final StopWatchTimer stopWatchTimer = StopWatchTimer();
   final textController = TextEditingController();
+
+  late bool saveOnSubmit;
 
   @override
   void initState() {
@@ -64,6 +68,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     audioRecorder = AudioRecorder();
+
+    _prefs.then((res) => {
+          setState(() {
+            saveOnSubmit = res.getBool("save_on_submit") ?? true;
+          })
+        });
   }
 
   @override
@@ -96,6 +106,25 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+        actions: [
+          PopupMenuButton(
+              icon: const Icon(Icons.more_vert),
+              itemBuilder: (_) => [
+                    PopupMenuItem(
+                        child: StatefulBuilder(
+                      builder: (_, popupSetState) => CheckboxListTile(
+                          title: const Text("Save on press submit button"),
+                          value: saveOnSubmit,
+                          onChanged: (value) => {
+                                popupSetState(() {
+                                  saveOnSubmit = !saveOnSubmit;
+                                  _prefs.then((prefs) => prefs.setBool(
+                                      "save_on_submit", saveOnSubmit));
+                                })
+                              }),
+                    )),
+                  ]),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => {_addToInbox(textController.text)},
@@ -106,8 +135,10 @@ class _MyHomePageState extends State<MyHomePage> {
         Container(
           margin: const EdgeInsets.all(5.0),
           child: TextField(
-            onSubmitted: _addToInbox,
+            onSubmitted: (text) => {if (saveOnSubmit) _addToInbox(text)},
             controller: textController,
+            // do not hide keyboard on submiting (hack)
+            onEditingComplete: () {},
             // make autofocus (hack)
             focusNode: focusNode,
             autofocus: false,
