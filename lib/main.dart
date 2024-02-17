@@ -246,12 +246,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-// YYYY-MM-DD_hh-mm
+// YYYY-MM-DD_hh-mm-ss
 String formatDateTime(DateTime datetime) {
+  // ignore: prefer_interpolation_to_compose_strings
   return datetime
-      .toString()
-      .split(":")
-      .take(2)
-      .join("-")
-      .replaceFirst(" ", "_");
+          .toString()
+          .split(":")
+          .take(2)
+          .join("-")
+          .replaceFirst(" ", "_") +
+      "-" +
+      datetime.second.toString().padLeft(2, '0');
 }
