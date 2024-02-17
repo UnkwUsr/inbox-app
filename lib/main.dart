@@ -9,6 +9,7 @@ import 'package:record/record.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 const String INBOX_PATH = "/sdcard/txts/phone_inbox";
 const String INBOX_MD_PATH = "$INBOX_PATH/inbox.md";
@@ -211,6 +212,7 @@ class _MyHomePageState extends State<MyHomePage> {
         isRecording = false;
         stopWatchTimer.onStopTimer();
         stopWatchTimer.onResetTimer();
+        WakelockPlus.disable();
 
         // close app
         SystemChannels.platform.invokeMethod('SystemNavigator.pop');
@@ -239,6 +241,8 @@ class _MyHomePageState extends State<MyHomePage> {
     stopWatchTimer.onStartTimer();
     // hide keyboard
     focusNode.unfocus();
+    // keep screen on while recording
+    WakelockPlus.enable();
 
     setState(() {
       isRecording = true;
