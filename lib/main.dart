@@ -132,6 +132,9 @@ class _MyHomePageState extends State<MyHomePage> {
     if (!await audioRecorder.hasPermission()) {
       return;
     }
+    if (await Permission.storage.request().isDenied) {
+      return;
+    }
 
     if (isRecording) {
       audioRecorder.stop();
