@@ -32,6 +32,22 @@ Minimal supported Android version: 5.0
     for speech recognition, for quicker analysing incoming inbox
 * keyboard automatically pops up on app open
 
+## FAQ
+
+### Q: I want to edit previous saved note!
+
+Don't! Just add another one, describing what you wanted to edit in previous
+one.
+
+Why so? Because it's much more hussle to edit something on phone.
+
+### Q: I want multiline note!
+
+Don't! Taking inbox notes should be as much faster and easier as possible, but
+when you wanting to write multiline note, you're already trying to structure
+note. Just leave it for future when you'll be on computer or in any better text
+editor.
+
 ## Background
 
 Previously I was using ticktick for inbox notes, but from time to time it was
