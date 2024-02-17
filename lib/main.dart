@@ -98,8 +98,14 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(children: [
         TextField(
           onSubmitted: _addToInbox,
+          // make autofocus (hack)
           focusNode: focusNode,
           autofocus: false,
+          // make wrap long lines (kind of hack)
+          minLines: 1,
+          maxLines: 20,
+          keyboardType: TextInputType.text,
+          textInputAction: TextInputAction.done,
         ),
         const Text("or", style: TextStyle(fontSize: 18)),
         // const SizedBox(height: 10),
