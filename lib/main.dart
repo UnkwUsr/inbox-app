@@ -96,16 +96,19 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Column(children: [
-        TextField(
-          onSubmitted: _addToInbox,
-          // make autofocus (hack)
-          focusNode: focusNode,
-          autofocus: false,
-          // make wrap long lines (kind of hack)
-          minLines: 1,
-          maxLines: 20,
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.done,
+        Container(
+          margin: const EdgeInsets.all(5.0),
+          child: TextField(
+            onSubmitted: _addToInbox,
+            // make autofocus (hack)
+            focusNode: focusNode,
+            autofocus: false,
+            // make wrap long lines (kind of hack)
+            minLines: 1,
+            maxLines: 20,
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.done,
+          ),
         ),
         const Text("or", style: TextStyle(fontSize: 18)),
         // const SizedBox(height: 10),
