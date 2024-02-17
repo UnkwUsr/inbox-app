@@ -55,6 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final textController = TextEditingController();
 
   late bool saveOnSubmit;
+  late bool showFloating = false;
 
   @override
   void initState() {
@@ -72,6 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _prefs.then((res) => {
           setState(() {
             saveOnSubmit = res.getBool("save_on_submit") ?? true;
+            showFloating = res.getBool("show_floating") ?? false;
           })
         });
   }
@@ -123,13 +125,32 @@ class _MyHomePageState extends State<MyHomePage> {
                                 })
                               }),
                     )),
+                    PopupMenuItem(
+                        child: StatefulBuilder(
+                      builder: (_, popupSetState) => CheckboxListTile(
+                          title: const Text("Show floating save button"),
+                          value: showFloating,
+                          onChanged: (value) {
+                            popupSetState(() {
+                              showFloating = !showFloating;
+                              _prefs.then((prefs) =>
+                                  prefs.setBool("show_floating", showFloating));
+                            });
+                            // this need to rebuild whole widget with updated
+                            // showFloating
+                            setState(() {});
+                          }),
+                    )),
                   ]),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => {_addToInbox(textController.text)},
-        tooltip: 'Save note',
-        child: const Icon(Icons.note_add),
+      floatingActionButton: Visibility(
+        visible: showFloating,
+        child: FloatingActionButton(
+          onPressed: () => {_addToInbox(textController.text)},
+          tooltip: 'Save note',
+          child: const Icon(Icons.note_add),
+        ),
       ),
       body: Column(children: [
         Container(
@@ -137,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: TextField(
             onSubmitted: (text) => {if (saveOnSubmit) _addToInbox(text)},
             controller: textController,
-            // do not hide keyboard on submiting (hack)
+            // do not hide keyboard on submitting (hack)
             onEditingComplete: () {},
             // make autofocus (hack)
             focusNode: focusNode,
