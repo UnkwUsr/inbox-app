@@ -50,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late final AudioRecorder audioRecorder;
   bool isRecording = false;
   final StopWatchTimer stopWatchTimer = StopWatchTimer();
+  final textController = TextEditingController();
 
   @override
   void initState() {
@@ -69,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void dispose() {
     audioRecorder.stop();
 
+    textController.dispose();
     focusNode.dispose();
     audioRecorder.dispose;
     stopWatchTimer.dispose();
@@ -95,11 +97,17 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => {_addToInbox(textController.text)},
+        tooltip: 'Save note',
+        child: const Icon(Icons.note_add),
+      ),
       body: Column(children: [
         Container(
           margin: const EdgeInsets.all(5.0),
           child: TextField(
             onSubmitted: _addToInbox,
+            controller: textController,
             // make autofocus (hack)
             focusNode: focusNode,
             autofocus: false,
