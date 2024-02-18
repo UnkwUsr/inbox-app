@@ -92,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _addToInbox(String text) async {
-    if (await Permission.storage.request().isDenied) {
+    if (!await Permission.storage.request().isGranted) {
       Fluttertoast.showToast(msg: "Please grant Storage permission");
       return;
     }
@@ -210,7 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
       Fluttertoast.showToast(msg: "Please grant Microphone permission");
       return;
     }
-    if (await Permission.storage.request().isDenied) {
+    if (!await Permission.storage.request().isGranted) {
       Fluttertoast.showToast(msg: "Please grant Storage permission");
       return;
     }
