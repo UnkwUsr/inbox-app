@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  device_info_plus: ^9.1.2
   flutter:
     sdk: flutter
   fluttertoast: ^8.2.4

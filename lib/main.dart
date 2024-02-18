@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'dart:async';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -92,8 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _addToInbox(String text) async {
-    if (!await Permission.storage.request().isGranted) {
-      Fluttertoast.showToast(msg: "Please grant Storage permission");
+    if (!await requestStoragePermission()) {
       return;
     }
 
@@ -210,8 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
       Fluttertoast.showToast(msg: "Please grant Microphone permission");
       return;
     }
-    if (!await Permission.storage.request().isGranted) {
-      Fluttertoast.showToast(msg: "Please grant Storage permission");
+    if (!await requestStoragePermission()) {
       return;
     }
 
@@ -281,4 +280,20 @@ String formatDateTime(DateTime datetime) {
           .replaceFirst(" ", "_") +
       "-" +
       datetime.second.toString().padLeft(2, '0');
+}
+
+Future<bool> requestStoragePermission() async {
+  var sdkVersion = (await DeviceInfoPlugin().androidInfo).version.sdkInt;
+  if (sdkVersion < 30) {
+    if (await Permission.storage.request().isGranted) {
+      return true;
+    }
+  } else {
+    if (await Permission.manageExternalStorage.request().isGranted) {
+      return true;
+    }
+  }
+
+  Fluttertoast.showToast(msg: "Please grant Storage permission");
+  return false;
 }
