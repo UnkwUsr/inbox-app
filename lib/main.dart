@@ -98,8 +98,13 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     File file = File(INBOX_MD_PATH);
-    await file.parent.create(recursive: true);
-    file.writeAsStringSync('* $text\n', mode: FileMode.append);
+    try {
+      await file.parent.create(recursive: true);
+      file.writeAsStringSync('* $text\n', mode: FileMode.append);
+    } catch (e, _) {
+      Fluttertoast.showToast(msg: e.toString());
+      return;
+    }
 
     // close app
     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
@@ -225,22 +230,33 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
 
-    Directory(INBOX_VOICES_PATH).create(recursive: true).then((_) {
+    try {
+      await Directory(INBOX_VOICES_PATH).create(recursive: true);
+    } catch (e, _) {
+      Fluttertoast.showToast(msg: e.toString());
+      return;
+    }
+
+    (() async {
       var datetime = formatDateTime(DateTime.now());
       var path = "$INBOX_VOICES_PATH/voice_$datetime.m4a";
       File file = File(path);
       var config = const RecordConfig();
 
-      (() async {
-        final stream = await audioRecorder.startStream(config);
-        stream.listen(
-          (data) {
+      final stream = await audioRecorder.startStream(config);
+      stream.listen(
+        (data) {
+          try {
             file.writeAsBytesSync(data, mode: FileMode.append);
-          },
-          // onDone: () => print('End of stream'),
-        );
-      })();
-    });
+          } catch (e, _) {
+            Fluttertoast.showToast(msg: e.toString());
+            return;
+          }
+        },
+        // onDone: () => print('End of stream'),
+        onError: (e) => Fluttertoast.showToast(msg: e.toString()),
+      );
+    })();
 
     stopWatchTimer.onStartTimer();
     // hide keyboard
