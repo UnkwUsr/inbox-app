@@ -157,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: FloatingActionButton(
           onPressed: () => {_addToInbox(textController.text)},
           tooltip: 'Save note',
-          child: const Icon(Icons.note_add),
+          child: const Icon(Icons.check),
         ),
       ),
       body: Column(children: [
