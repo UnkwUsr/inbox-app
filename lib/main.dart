@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:record/record.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
@@ -92,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _addToInbox(String text) async {
     if (await Permission.storage.request().isDenied) {
+      Fluttertoast.showToast(msg: "Please grant Storage permission");
       return;
     }
 
@@ -200,9 +202,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   toggleRecording() async {
     if (!await audioRecorder.hasPermission()) {
+      Fluttertoast.showToast(msg: "Please grant Microphone permission");
       return;
     }
     if (await Permission.storage.request().isDenied) {
+      Fluttertoast.showToast(msg: "Please grant Storage permission");
       return;
     }
 
