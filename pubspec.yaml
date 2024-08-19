@@ -37,6 +37,7 @@ dependencies:
   shared_preferences: ^2.2.2
   stop_watch_timer: ^3.0.2
   wakelock_plus: ^1.1.4
+  receive_sharing_intent: ^1.8.0
 
 dependency_overrides:
   # fix dart breaking change
