@@ -38,6 +38,10 @@ dependencies:
   stop_watch_timer: ^3.0.2
   wakelock_plus: ^1.1.4
 
+dependency_overrides:
+  # fix dart breaking change
+  win32: ^5.5.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
