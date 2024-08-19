@@ -97,6 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
           var datetime = formatDateTime(DateTime.now());
           var target = "$INBOX_PATH/${datetime}_${path.basename(share.path)}";
           File(share.path).copy(target);
+          Fluttertoast.showToast(msg: "File saved");
         }
       }
 
@@ -127,6 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       await file.parent.create(recursive: true);
       file.writeAsStringSync('* $text\n', mode: FileMode.append);
+      Fluttertoast.showToast(msg: "Note saved");
     } catch (e, _) {
       Fluttertoast.showToast(msg: e.toString());
       return;
@@ -248,6 +250,7 @@ class _MyHomePageState extends State<MyHomePage> {
         stopWatchTimer.onResetTimer();
         WakelockPlus.disable();
 
+        Fluttertoast.showToast(msg: "Voice saved");
         // close app
         SystemChannels.platform.invokeMethod('SystemNavigator.pop');
       });
