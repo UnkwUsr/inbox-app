@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 const String INBOX_PATH = "/sdcard/txts/phone_inbox";
 const String INBOX_MD_PATH = "$INBOX_PATH/inbox.md";
@@ -79,6 +80,25 @@ class _MyHomePageState extends State<MyHomePage> {
             showFloating = res.getBool("show_floating") ?? false;
           })
         });
+
+    // Get the media sharing coming from outside the app while the app is closed.
+    ReceiveSharingIntent.instance.getInitialMedia().then((shares_list) {
+      setState(() {
+        for(final value in shares_list){
+          if(value.type == SharedMediaType.text || value.type == SharedMediaType.url) {
+            // TODO: this will really fire only once because under the hood it
+            // runs exit code at the end of the method
+            _addToInbox(value.path);
+          } else {
+            // store file value.path
+            Fluttertoast.showToast(msg: "value.path: " + value.path);
+          }
+        }
+
+        // Tell the library that we are done processing the intent.
+        ReceiveSharingIntent.instance.reset();
+      });
+    });
   }
 
   @override
