@@ -243,7 +243,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     if (isRecording) {
-      audioRecorder.stop();
+      await audioRecorder.stop();
       setState(() {
         isRecording = false;
         stopWatchTimer.onStopTimer();
@@ -268,22 +268,9 @@ class _MyHomePageState extends State<MyHomePage> {
     (() async {
       var datetime = formatDateTime(DateTime.now());
       var path = "$INBOX_VOICES_PATH/voice_$datetime.m4a";
-      File file = File(path);
       var config = const RecordConfig();
 
-      final stream = await audioRecorder.startStream(config);
-      stream.listen(
-        (data) {
-          try {
-            file.writeAsBytesSync(data, mode: FileMode.append);
-          } catch (e, _) {
-            Fluttertoast.showToast(msg: e.toString());
-            return;
-          }
-        },
-        // onDone: () => print('End of stream'),
-        onError: (e) => Fluttertoast.showToast(msg: e.toString()),
-      );
+      await audioRecorder.start(config, path: path);
     })();
 
     stopWatchTimer.onStartTimer();
