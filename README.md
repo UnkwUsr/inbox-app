@@ -17,12 +17,13 @@ You can download latest .apk build from
 [releases](https://github.com/UnkwUsr/inbox-app/releases) page (choose by your
 processor architecture, or try each one if don't know yours).
 
-Minimal supported Android version: 5.0
+Minimal supported Android version: 6.0
 
 ## Features
 
 * take text notes
 * record voice notes
+* save shared text/urls/files from other apps
 * shortcut button in quick settings, allowing you to quickly take notes when
   you reading books or surfing web, without distracting main activity
 * taken notes saved in plain text files (or per file, for voice records)
