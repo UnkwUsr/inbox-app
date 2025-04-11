@@ -127,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
     File file = File(INBOX_MD_PATH);
     try {
       await file.parent.create(recursive: true);
-      file.writeAsStringSync('* $text\n', mode: FileMode.append);
+      file.writeAsStringSync('* ${text.trimRight()}\n', mode: FileMode.append);
       Fluttertoast.showToast(msg: "Note saved");
       return true;
     } catch (e, _) {
