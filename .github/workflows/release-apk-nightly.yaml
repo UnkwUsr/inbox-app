@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - master
+      - test_asd
 
 jobs:
   main:
@@ -26,17 +26,3 @@ jobs:
         # and rename them
         sudo apt-get install -y rename
         rename 's/app-/inbox-app-/' build/app/outputs/flutter-apk/*.apk
-
-    - name: Upload release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      uses: andelf/nightly-release@main
-      with:
-        prerelease: false
-        tag_name: nightly
-        name: ${{ env.VERSION_NAME }}
-        files: build/app/outputs/flutter-apk/*.apk
-
-# needed for making releases
-permissions:
-  contents: write
