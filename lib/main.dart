@@ -82,28 +82,17 @@ class _MyHomePageState extends State<MyHomePage> {
           })
         });
 
-    // Get the media sharing coming from outside the app while the app is closed.
+    // Listen to shared media while the app is in the memory
+    ReceiveSharingIntent.instance.getMediaStream().listen((shares_list) {
+      handle_sharing_intent(shares_list);
+    }, onError: (err) {
+      Fluttertoast.showToast(msg: "sharing intent getMediaStream error: $err");
+    });
+    // Get shared media while the app is closed
     ReceiveSharingIntent.instance.getInitialMedia().then((shares_list) {
-      if(shares_list.isEmpty) {
-        return;
-      }
-
-      for(final share in shares_list){
-        if(share.type == SharedMediaType.text || share.type == SharedMediaType.url) {
-          _addToInbox(share.path);
-          Fluttertoast.showToast(msg: "Shared text saved");
-        } else {
-          var datetime = formatDateTime(DateTime.now());
-          var target = "$INBOX_PATH/${datetime}_${path.basename(share.path)}";
-          File(share.path).copy(target);
-          Fluttertoast.showToast(msg: "File saved");
-        }
-      }
-
+      handle_sharing_intent(shares_list);
       // Tell the library that we are done processing the intent.
       ReceiveSharingIntent.instance.reset();
-      // close app
-      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
     });
   }
 
@@ -288,6 +277,27 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       isRecording = true;
     });
+  }
+
+  void handle_sharing_intent(List<SharedMediaFile> shares_list) {
+    if(shares_list.isEmpty) {
+      return;
+    }
+
+    for(final share in shares_list){
+      if(share.type == SharedMediaType.text || share.type == SharedMediaType.url) {
+        _addToInbox(share.path);
+        Fluttertoast.showToast(msg: "Shared text saved");
+      } else {
+        var datetime = formatDateTime(DateTime.now());
+        var target = "$INBOX_PATH/${datetime}_${path.basename(share.path)}";
+        File(share.path).copy(target);
+        Fluttertoast.showToast(msg: "File saved");
+      }
+    }
+
+    // close app
+    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
   }
 }
 
