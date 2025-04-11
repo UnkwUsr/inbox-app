@@ -90,8 +90,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
       for(final share in shares_list){
         if(share.type == SharedMediaType.text || share.type == SharedMediaType.url) {
-          // TODO: this will really fire only once because under the hood it
-          // runs exit code at the end of the method
           _addToInbox(share.path);
           Fluttertoast.showToast(msg: "Shared text saved");
         } else {
@@ -120,9 +118,10 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  void _addToInbox(String text) async {
+  // return true if everything ok, or false if some error happened
+  Future<bool> _addToInbox(String text) async {
     if (!await requestStoragePermission()) {
-      return;
+      return false;
     }
 
     File file = File(INBOX_MD_PATH);
@@ -130,11 +129,17 @@ class _MyHomePageState extends State<MyHomePage> {
       await file.parent.create(recursive: true);
       file.writeAsStringSync('* $text\n', mode: FileMode.append);
       Fluttertoast.showToast(msg: "Note saved");
+      return true;
     } catch (e, _) {
       Fluttertoast.showToast(msg: e.toString());
+      return false;
+    }
+  }
+
+  void _addToInboxAndCloseApp(String text) async {
+    if (!await _addToInbox(text)) {
       return;
     }
-
     // close app
     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
   }
@@ -184,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: Visibility(
         visible: showFloating,
         child: FloatingActionButton(
-          onPressed: () => {_addToInbox(textController.text)},
+          onPressed: () => {_addToInboxAndCloseApp(textController.text)},
           tooltip: 'Save note',
           child: const Icon(Icons.check),
         ),
@@ -193,7 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Container(
           margin: const EdgeInsets.all(5.0),
           child: TextField(
-            onSubmitted: (text) => {if (saveOnSubmit) _addToInbox(text)},
+            onSubmitted: (text) => {if (saveOnSubmit) _addToInboxAndCloseApp(text)},
             controller: textController,
             // do not hide keyboard on submitting (hack)
             onEditingComplete: () {},
