@@ -151,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     PopupMenuItem(
                         child: StatefulBuilder(
                       builder: (_, popupSetState) => CheckboxListTile(
-                          title: const Text("Save on press submit button"),
+                          title: const Text("Save on keyboard submit button"),
                           value: saveOnSubmit,
                           onChanged: (value) => {
                                 popupSetState(() {
@@ -217,7 +217,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () => toggleRecording(),
                 child: isRecording
                     ? const Text("Stop recording")
-                    : const Text("Start recording"))),
+                    : const Text("Voice record"))),
         if (isRecording)
           StreamBuilder<int>(
             stream: stopWatchTimer.rawTime,
