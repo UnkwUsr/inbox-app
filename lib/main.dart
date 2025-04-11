@@ -199,6 +199,11 @@ class _MyHomePageState extends State<MyHomePage> {
             maxLines: 20,
             keyboardType: TextInputType.text,
             textInputAction: TextInputAction.done,
+            decoration: InputDecoration(
+                hintText: 'Type note text',
+                hintStyle: TextStyle(
+                  color: Colors.grey,
+                )),
           ),
         ),
         const Text("or", style: TextStyle(fontSize: 18)),
