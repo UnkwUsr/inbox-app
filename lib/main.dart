@@ -93,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // TODO: this will really fire only once because under the hood it
           // runs exit code at the end of the method
           _addToInbox(share.path);
+          Fluttertoast.showToast(msg: "Shared text saved");
         } else {
           var datetime = formatDateTime(DateTime.now());
           var target = "$INBOX_PATH/${datetime}_${path.basename(share.path)}";
