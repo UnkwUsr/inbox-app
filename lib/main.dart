@@ -77,25 +77,27 @@ class _MyHomePageState extends State<MyHomePage> {
 
     audioRecorder = AudioRecorder();
 
-    _prefs.then((res) => {
-          setState(() {
-            saveOnSubmit = res.getBool("save_on_submit") ?? true;
-            showFloating = res.getBool("show_floating") ?? false;
-            saveDirectory = res.getString("save_directory") ?? "/storage/emulated/0/inbox";
-          })
-        });
+    _prefs.then((res) {
+      setState(() {
+        saveOnSubmit = res.getBool("save_on_submit") ?? true;
+        showFloating = res.getBool("show_floating") ?? false;
+        saveDirectory = res.getString("save_directory") ?? "/storage/emulated/0/inbox";
+      });
+
+      // Get shared media while the app is closed. Doing this here because we
+      // need saveDirectory to be loaded already
+      ReceiveSharingIntent.instance.getInitialMedia().then((shares_list) {
+        handle_sharing_intent(shares_list);
+        // Tell the library that we are done processing the intent.
+        ReceiveSharingIntent.instance.reset();
+      });
+    });
 
     // Listen to shared media while the app is in the memory
     ReceiveSharingIntent.instance.getMediaStream().listen((shares_list) {
       handle_sharing_intent(shares_list);
     }, onError: (err) {
       Fluttertoast.showToast(msg: "sharing intent getMediaStream error: $err");
-    });
-    // Get shared media while the app is closed
-    ReceiveSharingIntent.instance.getInitialMedia().then((shares_list) {
-      handle_sharing_intent(shares_list);
-      // Tell the library that we are done processing the intent.
-      ReceiveSharingIntent.instance.reset();
     });
   }
 
