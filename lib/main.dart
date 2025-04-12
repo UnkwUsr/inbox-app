@@ -147,66 +147,89 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           PopupMenuButton(
               icon: const Icon(Icons.more_vert),
+              menuPadding: EdgeInsets.all(0),
+              // removing padding for PopupMenuItem and adding for child: this is
+              // to make child handle onClick actions, because otherwise
+              // PopupMenuItem padding can eat our clicks
               itemBuilder: (_) => [
                     PopupMenuItem(
+                        padding: EdgeInsets.all(0),
                         child: StatefulBuilder(
-                      builder: (_, popupSetState) => CheckboxListTile(
-                          title: const Text("Save on keyboard submit button"),
-                          value: saveOnSubmit,
-                          onChanged: (value) => {
+                          builder: (_, popupSetState) => CheckboxListTile(
+                              title: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 0),
+                                  child: const Text(
+                                      "Save on keyboard submit button")),
+                              value: saveOnSubmit,
+                              onChanged: (value) => {
+                                    popupSetState(() {
+                                      saveOnSubmit = !saveOnSubmit;
+                                      _prefs.then((prefs) => prefs.setBool(
+                                          "save_on_submit", saveOnSubmit));
+                                    })
+                                  }),
+                        )),
+                    PopupMenuItem(
+                        padding: EdgeInsets.all(0),
+                        child: StatefulBuilder(
+                          builder: (_, popupSetState) => CheckboxListTile(
+                              title: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 0),
+                                  child:
+                                      const Text("Show floating save button")),
+                              value: showFloating,
+                              onChanged: (value) {
                                 popupSetState(() {
-                                  saveOnSubmit = !saveOnSubmit;
+                                  showFloating = !showFloating;
                                   _prefs.then((prefs) => prefs.setBool(
-                                      "save_on_submit", saveOnSubmit));
-                                })
+                                      "show_floating", showFloating));
+                                });
+                                // this need to rebuild whole widget with updated
+                                // showFloating
+                                setState(() {});
                               }),
-                    )),
+                        )),
                     PopupMenuItem(
+                        padding: EdgeInsets.all(0),
                         child: StatefulBuilder(
-                      builder: (_, popupSetState) => CheckboxListTile(
-                          title: const Text("Show floating save button"),
-                          value: showFloating,
-                          onChanged: (value) {
-                            popupSetState(() {
-                              showFloating = !showFloating;
-                              _prefs.then((prefs) =>
-                                  prefs.setBool("show_floating", showFloating));
-                            });
-                            // this need to rebuild whole widget with updated
-                            // showFloating
-                            setState(() {});
-                          }),
-                    )),
-                    PopupMenuItem(
-                        child: StatefulBuilder(
-                      builder: (_, popupSetState) => GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () async {
-                          final String? pickedDirectory =
-                              await getDirectoryPath();
-                          if (pickedDirectory != null) {
-                            popupSetState(() {
-                              saveDirectory = pickedDirectory;
-                              _prefs.then((prefs) => prefs.setString(
-                                  "save_directory", saveDirectory));
-                            });
-                          }
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Set save directory'),
-                            Text(
-                              "Current: $saveDirectory",
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black.withValues(alpha: 0.8)),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )),
+                          builder: (_, popupSetState) => GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: () async {
+                              final String? pickedDirectory =
+                                  await getDirectoryPath();
+                              if (pickedDirectory != null) {
+                                popupSetState(() {
+                                  saveDirectory = pickedDirectory;
+                                  _prefs.then((prefs) => prefs.setString(
+                                      "save_directory", saveDirectory));
+                                });
+                              }
+                            },
+                            child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 8),
+                                child: SizedBox(
+                                    width: double.infinity,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Set save directory'),
+                                        Text(
+                                          "Current: $saveDirectory",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black
+                                                  .withValues(alpha: 0.8)),
+                                        ),
+                                      ],
+                                    ))),
+                          ),
+                        )),
                   ]),
         ],
       ),
