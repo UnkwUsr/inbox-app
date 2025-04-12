@@ -81,21 +81,22 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         saveOnSubmit = res.getBool("save_on_submit") ?? true;
         showFloating = res.getBool("show_floating") ?? false;
-        saveDirectory = res.getString("save_directory") ?? "/storage/emulated/0/inbox";
+        saveDirectory =
+            res.getString("save_directory") ?? "/storage/emulated/0/inbox";
       });
 
       // Get shared media while the app is closed. Doing this here because we
       // need saveDirectory to be loaded already
-      ReceiveSharingIntent.instance.getInitialMedia().then((shares_list) {
-        handle_sharing_intent(shares_list);
+      ReceiveSharingIntent.instance.getInitialMedia().then((sharesList) {
+        handleSharingIntent(sharesList);
         // Tell the library that we are done processing the intent.
         ReceiveSharingIntent.instance.reset();
       });
     });
 
     // Listen to shared media while the app is in the memory
-    ReceiveSharingIntent.instance.getMediaStream().listen((shares_list) {
-      handle_sharing_intent(shares_list);
+    ReceiveSharingIntent.instance.getMediaStream().listen((sharesList) {
+      handleSharingIntent(sharesList);
     }, onError: (err) {
       Fluttertoast.showToast(msg: "sharing intent getMediaStream error: $err");
     });
@@ -245,7 +246,8 @@ class _MyHomePageState extends State<MyHomePage> {
         Container(
           margin: const EdgeInsets.all(5.0),
           child: TextField(
-            onSubmitted: (text) => {if (saveOnSubmit) _addToInboxAndCloseApp(text)},
+            onSubmitted: (text) =>
+                {if (saveOnSubmit) _addToInboxAndCloseApp(text)},
             controller: textController,
             // do not hide keyboard on submitting (hack)
             onEditingComplete: () {},
@@ -343,13 +345,14 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void handle_sharing_intent(List<SharedMediaFile> shares_list) {
-    if(shares_list.isEmpty) {
+  void handleSharingIntent(List<SharedMediaFile> sharesList) {
+    if (sharesList.isEmpty) {
       return;
     }
 
-    for(final share in shares_list){
-      if(share.type == SharedMediaType.text || share.type == SharedMediaType.url) {
+    for (final share in sharesList) {
+      if (share.type == SharedMediaType.text ||
+          share.type == SharedMediaType.url) {
         _addToInbox(share.path);
         Fluttertoast.showToast(msg: "Shared text saved");
       } else {
