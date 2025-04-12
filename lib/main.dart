@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -15,9 +16,9 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:path/path.dart' as path;
 
-const String INBOX_PATH = "/sdcard/txts/phone_inbox";
-const String INBOX_MD_PATH = "$INBOX_PATH/inbox.md";
-const String INBOX_VOICES_PATH = "$INBOX_PATH/voices";
+// relative to inbox directory
+const String INBOX_MD_PATH = "inbox.md";
+const String INBOX_VOICES_PATH = "voices";
 
 void main() {
   runApp(const MyApp());
@@ -61,6 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   late bool saveOnSubmit;
   late bool showFloating = false;
+  late String saveDirectory;
 
   @override
   void initState() {
@@ -79,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
           setState(() {
             saveOnSubmit = res.getBool("save_on_submit") ?? true;
             showFloating = res.getBool("show_floating") ?? false;
+            saveDirectory = res.getString("save_directory") ?? "/storage/emulated/0/inbox";
           })
         });
 
@@ -113,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
       return false;
     }
 
-    File file = File(INBOX_MD_PATH);
+    File file = File("$saveDirectory/$INBOX_MD_PATH");
     try {
       await file.parent.create(recursive: true);
       file.writeAsStringSync('* ${text.trimRight()}\n', mode: FileMode.append);
@@ -171,6 +174,36 @@ class _MyHomePageState extends State<MyHomePage> {
                             // showFloating
                             setState(() {});
                           }),
+                    )),
+                    PopupMenuItem(
+                        child: StatefulBuilder(
+                      builder: (_, popupSetState) => GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () async {
+                          final String? pickedDirectory =
+                              await getDirectoryPath();
+                          if (pickedDirectory != null) {
+                            popupSetState(() {
+                              saveDirectory = pickedDirectory;
+                              _prefs.then((prefs) => prefs.setString(
+                                  "save_directory", saveDirectory));
+                            });
+                          }
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Set save directory'),
+                            Text(
+                              "Current: $saveDirectory",
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black.withValues(alpha: 0.8)),
+                            ),
+                          ],
+                        ),
+                      ),
                     )),
                   ]),
         ],
@@ -258,8 +291,9 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
 
+    var voicesDir = "$saveDirectory/$INBOX_VOICES_PATH";
     try {
-      await Directory(INBOX_VOICES_PATH).create(recursive: true);
+      await Directory(voicesDir).create(recursive: true);
     } catch (e, _) {
       Fluttertoast.showToast(msg: e.toString());
       return;
@@ -267,7 +301,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     (() async {
       var datetime = formatDateTime(DateTime.now());
-      var path = "$INBOX_VOICES_PATH/voice_$datetime.m4a";
+      var path = "$voicesDir/voice_$datetime.m4a";
       var config = const RecordConfig();
 
       await audioRecorder.start(config, path: path);
@@ -295,7 +329,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Fluttertoast.showToast(msg: "Shared text saved");
       } else {
         var datetime = formatDateTime(DateTime.now());
-        var target = "$INBOX_PATH/${datetime}_${path.basename(share.path)}";
+        var target = "$saveDirectory/${datetime}_${path.basename(share.path)}";
         File(share.path).copy(target);
         Fluttertoast.showToast(msg: "File saved");
       }

@@ -38,6 +38,7 @@ dependencies:
   stop_watch_timer: ^3.0.2
   wakelock_plus: ^1.1.4
   receive_sharing_intent: ^1.8.0
+  file_selector: ^1.0.3
 
 dev_dependencies:
   flutter_test:
