@@ -1,0 +1,22 @@
+Stupid simple inbox app that stores notes in local directory, available to
+be synced with external programs.
+<br>
+<br>
+
+Idea of this app is that inbox notes should be taken quickly, while later, for
+example on computer, with comfortable setup (and real full-fledged text
+editor), we can process them all, sort, categorize and so on.
+<br>
+<br>
+
+Features:
+<br>
+
+<ul>
+    <li>take text notes</li>
+    <li>record voice notes (with microphone)</li>
+    <li>notes are saved in plain text file in local directory, available to by synced with any external program</li>
+    <li>save <b>shared</b> text/urls/files from other apps</li>
+    <li>shortcut button in quick settings, allowing you to quickly take notes when you reading books or surfing web, without distracting main activity</li>
+    <li>keyboard automatically pops up on app open</li>
+</ul>

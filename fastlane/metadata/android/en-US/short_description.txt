@@ -1,0 +1,1 @@
+Inbox app with text field and ability to record voice with microphone, storing notes in local directory
