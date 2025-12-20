@@ -36,6 +36,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.dark
+        ),
+        useMaterial3: true,
+      ),
       home: const MyHomePage(title: 'Inbox app'),
     );
   }
@@ -224,7 +231,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           "Current: $saveDirectory",
                                           style: TextStyle(
                                               fontSize: 12,
-                                              color: Colors.black
+                                              color: Colors.grey
                                                   .withValues(alpha: 0.8)),
                                         ),
                                       ],
@@ -273,7 +280,10 @@ class _MyHomePageState extends State<MyHomePage> {
             child: ElevatedButton(
                 style: ButtonStyle(
                     backgroundColor: MaterialStatePropertyAll<Color>(
-                        isRecording ? Colors.red : Colors.white)),
+                        isRecording ? Colors.red :
+                                     (MediaQuery.platformBrightnessOf(context) == Brightness.light
+                                       ?
+                                       Colors.white : Colors.black))),
                 onPressed: () => toggleRecording(),
                 child: isRecording
                     ? const Text("Stop recording")
