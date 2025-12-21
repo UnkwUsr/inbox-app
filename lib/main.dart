@@ -251,7 +251,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Column(children: [
         Container(
-          margin: const EdgeInsets.all(5.0),
+          margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 16.0),
           child: TextField(
             onSubmitted: (text) =>
                 {if (saveOnSubmit) _addToInboxAndCloseApp(text)},
